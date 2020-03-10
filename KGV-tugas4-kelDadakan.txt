@@ -1,0 +1,235 @@
+//
+//  fisika.cpp
+//  KGVKGVKGV
+//
+//  Created by Mohammad Raja Alfachrezi Dalimunthe on 27/02/20.
+//  Copyright © 2020 Mohammad Raja Alfachrezi Dalimunthe. All rights reserved.
+//
+#ifdef __APPLE__
+/* Defined before OpenGL and GLUT includes to avoid deprecation messages */
+#define GL_SILENCE_DEPRECATION
+#include <OpenGL/gl.h>
+#include <GLUT/glut.h>
+#else
+#include <OPENGL/gl.h>
+#include <GLUT/GLUT.h>
+#endif
+#include <iostream>
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+using namespace std;
+
+float armRotation = 0.0f;
+float handRotation = 0.0f;
+float palmRotation = 0.0f;
+
+bool ArmRotationUp = false;
+bool ArmRotationDown = false;
+
+bool handRotationUp = false;
+bool handRotationDown = false;
+
+bool palmRotationUp = false;
+bool palmRotationDown = false;
+
+
+bool stopFlag = false;
+float curAngle = 0.0f;
+float stoppedAtAngle = 0.0f;
+
+void changeSize(int w, int h) {
+
+    // Prevent a divide by zero, when window is too short
+    // (you cant make a window of zero width).
+    if (h == 0)
+        h = 1;
+
+
+    // Use the Projection Matrix
+    glMatrixMode(GL_PROJECTION);
+
+    // Reset Matrix
+    glLoadIdentity();
+
+    // Set the viewport to be the entire window
+    glViewport(0, 0, w, h);
+
+    // Set the correct perspective.
+    //gluPerspective(45, ratio, 1, 100);
+    gluOrtho2D(-5, 5, -5, 5);
+
+    // Get Back to the Modelview
+    glMatrixMode(GL_MODELVIEW);
+}
+
+void renderScene(void) {
+
+    glClearColor(0.0f, 0.0f, 1.0f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glLoadIdentity();
+
+    if (ArmRotationUp == true) {
+        armRotation += 0.1f;
+        handRotation += 0.1f;
+        palmRotation += 0.1f;
+
+        if (armRotation > 60.0f) {
+            ArmRotationUp =false;
+        }
+
+    }
+
+    if (ArmRotationDown == true) {
+        armRotation -= 0.1f;
+        handRotation -= 0.1f;
+        palmRotation -= 0.1f;
+
+        if (armRotation < -90.0f) {
+            ArmRotationDown = false;
+        }
+    }
+
+    if (handRotationUp == true) {
+        handRotation += 0.1f;
+        palmRotation += 0.1f;
+
+        if (handRotation > 120.0f) {
+            handRotationUp = false;
+        }
+
+    }
+    if (handRotationDown == true) {
+        handRotation -= 0.1f;
+        palmRotation -= 0.1f;
+
+        if (handRotation < 0.0f) {
+           handRotationDown = false;
+        }
+    }
+    if (palmRotationUp == true) {
+        palmRotation += 0.1f;
+
+        if (palmRotation > 90.0f) {
+            palmRotationUp = false;
+        }
+    }
+    if (palmRotationDown == true) {
+        palmRotation -= 0.1f;
+
+        if (palmRotation < -90.0f) {
+            palmRotationDown = false;
+        }
+    }
+
+    glTranslatef(-3.0f, 0.0f, 0.0f);
+    glRotatef(armRotation, 0.0f, 0.0f, 1.0f);
+    glBegin(GL_QUADS);
+    glColor3f(1.0f, 1.0f, 1.0f);
+    glVertex2f(0.0f, -0.5f);
+    glVertex2f(1.5f, -0.5f);
+    glVertex2f(1.5f, 0.5f);
+    glVertex2f(0.0f, 0.5f);
+    glEnd();
+
+    glTranslatef(1.5f, 0.0f, 0.0f);
+    glRotatef(handRotation, 0.0f, 0.0f, 1.0f);
+    glBegin(GL_QUADS);
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glVertex2f(0.0f, -0.25f);
+    glVertex2f(2.5f, -0.25f);
+    glVertex2f(2.5f, 0.25f);
+    glVertex2f(0.0f, 0.25f);
+    glEnd();
+
+    glTranslatef(2.5f, 0.0f, 0.0f);
+    glRotatef(palmRotation, 0.0f, 0.0f, 1.0f);
+    glBegin(GL_QUADS);
+    glColor3f(0.0f, 1.0f, 0.0f);
+    glVertex2f(0.0f, -0.35f);
+    glVertex2f(1.0f, -0.35f);
+    glVertex2f(1.0f, 0.35f);
+    glVertex2f(0.0f, 0.35f);
+    glEnd();
+
+    glutSwapBuffers();
+
+}
+
+void keyinput(unsigned char input, int x, int y)
+{
+    if (input == 'q') {
+
+        ArmRotationUp = true;
+    }
+    else if (input == 'e') {
+
+        ArmRotationDown = true;
+    }
+    if (input == 'a') {
+
+        handRotationUp = true;
+    }
+    else if (input == 'd') {
+
+        handRotationDown = true;
+    }
+
+    if (input == 'z') {
+
+        palmRotationUp = true;
+    }
+    else if (input == 'c') {
+
+        palmRotationDown = true;
+    }
+}
+void keyboardUp(unsigned char input, int x, int y)
+{
+    if (input == 'q') {
+        ArmRotationUp = false;
+    }
+    else if (input == 'e') {
+        ArmRotationDown = false;
+    }
+    if (input == 'a') {
+
+        handRotationUp = false;
+    }
+    else if (input == 'd') {
+        
+
+        ArmRotationDown = false;
+    }
+
+    if (input == 'z') {
+
+        palmRotationUp = false;
+    }
+    else if (input == 'c') {
+
+        palmRotationDown = false;
+    }
+}
+int main(int argc, char** argv) {
+
+    // init GLUT and create window
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
+    glutInitWindowPosition(300, 300);
+    glutInitWindowSize(740, 640);
+    glutCreateWindow("Tugas 4");
+
+    // register callbacks
+    glutDisplayFunc(renderScene);
+    glutIdleFunc(renderScene);
+    glutReshapeFunc(changeSize);
+    glutFullScreen();
+    glutKeyboardFunc(keyinput);
+    glutKeyboardUpFunc(keyboardUp);
+
+    // enter GLUT event processing loop
+    glutMainLoop();
+
+    return 1;
+}
